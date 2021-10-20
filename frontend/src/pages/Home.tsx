@@ -11,7 +11,12 @@ import virus4 from 'assets/Virus4.png';
 import virus5 from 'assets/Virus5.png';
 import virus6 from 'assets/Virus6.png';
 
+import client from 'services/networking/client';
+
+
 const VirusImgs = [virus1, virus2, virus3, virus4, virus5, virus6];
+
+
 
 const { Title, Text } = Typography;
 const FixedTitle = styled(Title)`
@@ -93,6 +98,7 @@ export default () => {
               {...virus}
               onClick={() => {
                 killVirus(virus.id);
+                client.request('delete', `/virus/${virus.id}`);
               }}
             />
           ))}
