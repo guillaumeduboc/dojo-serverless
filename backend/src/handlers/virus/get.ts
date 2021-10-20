@@ -1,15 +1,18 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import uuid from 'uuid';
+import { DynamoDB } from 'aws-sdk';
 
-import { success } from '@libs/response';
+import { failure, success } from '@libs/response';
+
+const documentClient = new DynamoDB.DocumentClient();
 
 export const main: APIGatewayProxyHandler = async () => {
-  const viruses = [
-    { id: uuid() },
-    { id: uuid() },
-    { id: uuid() },
-    { id: uuid() },
-  ];
-
-  return success({ viruses });
+  return documentClient.query({TableName: "dojo-serverless-table"}, function(err, data) {
+    if (err) {
+      console.log("Error", err);
+      return failure({ err });
+    } else {
+      const viruses = data;
+      return success({ viruses });
+    }
+  });
 };

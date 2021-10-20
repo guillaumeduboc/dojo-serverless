@@ -493,10 +493,10 @@
     "@types/tough-cookie" "*"
     form-data "^2.5.0"
 
-"@types/serverless@^1.72.4":
-  version "1.72.6"
-  resolved "https://registry.yarnpkg.com/@types/serverless/-/serverless-1.72.6.tgz#8fb8c8e313cde77f9722bb9c28b21a2c44f97bc2"
-  integrity sha512-ku1Ym85fHbTpN9zc8mJltH7lhyMxievrpgp+6jEcw9zFUXLpK8rsVCaZfcJBvIccDBAlvlBlO5Rb1NwciH/B/A==
+"@types/serverless@^1.78.36":
+  version "1.78.36"
+  resolved "https://registry.yarnpkg.com/@types/serverless/-/serverless-1.78.36.tgz#a7cf3b22825caa815de845f215aa20ca9379ff1a"
+  integrity sha512-ciFBz5IPFuWKWlZH1ZKc+fYdE5Eo4MYrcavstuKWbQxpCKT9XIenoXQhmYtQ0PG166EjQ+OQz8qynMCJNykEsQ==
 
 "@types/tough-cookie@*":
   version "4.0.0"
