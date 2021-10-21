@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as AwsConfig from 'serverless/aws';
 
 import ApiGatewayErrors from './resources/apiGatewayErrors';
@@ -64,10 +65,35 @@ const serverlessConfiguration: AwsConfig.Serverless = {
         },
       ],
     },
+    createVirus: {
+      handler: 'src/handlers/virus/create.main',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'virus',
+            cors: true,
+          },
+        },
+      ],
+    },
+    deleteVirus: {
+      handler: 'src/handlers/virus/delete.main',
+      events: [
+        {
+          http: {
+            method: 'delete',
+            path: 'virus/{virusId}',
+            cors: true,
+          },
+        },
+      ],
+    },
   },
   resources: {
     Resources: {
-      ...ApiGatewayErrors, DojoServerlessTable: dynamodb,
+      ...ApiGatewayErrors,
+      DojoServerlessTable: dynamodb,
     },
   },
 };

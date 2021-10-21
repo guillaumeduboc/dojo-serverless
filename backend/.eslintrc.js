@@ -57,7 +57,6 @@ module.exports = {
       files: ['**/*.ts?(x)'],
       extends: [
         'plugin:@typescript-eslint/recommended',
-        'plugin:@typescript-eslint/recommended-requiring-type-checking',
         'plugin:prettier/recommended',
       ],
       parser: '@typescript-eslint/parser',
@@ -76,6 +75,8 @@ module.exports = {
         '@typescript-eslint/no-unnecessary-type-arguments': 'error',
         '@typescript-eslint/prefer-string-starts-ends-with': 'error',
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
+        'prettier/prettier': 'error',
+        '@typescript-eslint/no-var-requires': 'off',
       },
     },
   ],
