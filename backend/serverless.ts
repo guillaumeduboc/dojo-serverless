@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as AwsConfig from 'serverless/aws';
 
 import ApiGatewayErrors from './resources/apiGatewayErrors';
