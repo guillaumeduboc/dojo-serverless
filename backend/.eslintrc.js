@@ -76,6 +76,8 @@ module.exports = {
         '@typescript-eslint/prefer-string-starts-ends-with': 'error',
         '@typescript-eslint/switch-exhaustiveness-check': 'error',
         '@typescript-eslint/ban-ts-comment': 'off',
+        'require-await': 'off',
+        '@typescript-eslint/require-await': 'error',
       },
     },
   ],

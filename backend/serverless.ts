@@ -2,7 +2,7 @@ import * as AwsConfig from 'serverless/aws';
 
 import ApiGatewayErrors from './resources/apiGatewayErrors';
 import DojoServerlessTable from './resources/dynamodb';
-
+import Alarm from './resources/alarm';
 const serverlessConfiguration: AwsConfig.Serverless = {
   service: 'dojo-serverless-backend',
   frameworkVersion: '>=1.83',
@@ -22,7 +22,7 @@ const serverlessConfiguration: AwsConfig.Serverless = {
           'dynamodb:Query',
           'dynamodb:PutItem',
           'dynamodb:DeleteItem',
-          // 'dynamodb:ListStreams',
+          'dynamodb:ListStreams',
         ],
         Resource: { 'Fn::GetAtt': ['DojoServerlessTable', 'Arn'] },
       },
@@ -40,6 +40,24 @@ const serverlessConfiguration: AwsConfig.Serverless = {
     },
   },
   functions: {
+    reportAlarm: {
+      handler: 'reporting/reportAlarm.main',
+      events: [
+        {
+          eventBridge: {
+            pattern: {
+              source: ['aws.cloudwatch'],
+              'detail-type': ['CloudWatch Alarm State Change'],
+              detail: {
+                state: [
+                  `{ 'value': 'ALARM', 'alarmName': '${Alarm.Properties.AlarmName}' }`,
+                ],
+              },
+            },
+          },
+        },
+      ],
+    },
     hello: {
       handler: 'hello.main',
       events: [
@@ -64,7 +82,7 @@ const serverlessConfiguration: AwsConfig.Serverless = {
         },
         {
           schedule: {
-            rate: 'rate(1 minute)',
+            rate: 'rate(10 minutes)',
           },
         },
       ],
@@ -119,25 +137,25 @@ const serverlessConfiguration: AwsConfig.Serverless = {
         },
       ],
     },
-
-    // sendMessageToClient: {
-    //   handler: 'src/handlers/real-time/sendMessageToClient.main',
-    //   events: [
-    //     {
-    //       stream: {
-    //         // @ts-ignore
-    //         type: 'dynamodb',
-    //         // @ts-ignore
-    //         arn: { 'Fn::GetAtt': ['DojoServerlessTable', 'StreamArn'] },
-    //       },
-    //     },
-    //   ],
-    // },
+    sendMessageToClient: {
+      handler: 'src/handlers/real-time/sendMessageToClient.main',
+      events: [
+        {
+          stream: {
+            // @ts-ignore
+            type: 'dynamodb',
+            // @ts-ignore
+            arn: { 'Fn::GetAtt': ['DojoServerlessTable', 'StreamArn'] },
+          },
+        },
+      ],
+    },
   },
   resources: {
     Resources: {
       ...ApiGatewayErrors,
       DojoServerlessTable,
+      Alarm,
     },
   },
 };

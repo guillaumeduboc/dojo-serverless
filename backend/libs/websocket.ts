@@ -38,12 +38,14 @@ export const sendMessageToConnection = async ({
   });
   try {
     // TODO send a message to a connection
+    console.log('Trying to send message to connection');
     await apiGatewayManagementApi
       .postToConnection({
         ConnectionId: connectionId,
         Data: JSON.stringify(message),
       })
       .promise();
+    console.log('message sent to connection');
   } catch (error) {
     if (error.statusCode !== 410) {
       throw error;
