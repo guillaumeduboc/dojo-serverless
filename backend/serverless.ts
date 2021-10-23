@@ -49,9 +49,11 @@ const serverlessConfiguration: AwsConfig.Serverless = {
               source: ['aws.cloudwatch'],
               'detail-type': ['CloudWatch Alarm State Change'],
               detail: {
-                state: [
-                  `{ 'value': 'ALARM', 'alarmName': '${Alarm.Properties.AlarmName}' }`,
-                ],
+                alarmName: [`${Alarm.Properties.AlarmName}`],
+                state: {
+                  //@ts-ignore
+                  value: ['ALARM'],
+                },
               },
             },
           },
