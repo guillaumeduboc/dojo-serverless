@@ -5,11 +5,11 @@ export default {
     AlarmName: 'alarmVirus',
     ComparisonOperator: 'GreaterThanOrEqualToThreshold',
     EvaluationPeriods: 1,
-    MetricName: 'Invocations',
+    MetricName: 'Errors',
     Namespace: 'AWS/Lambda',
     Period: 60,
     Statistic: 'Sum',
-    Threshold: 10,
+    Threshold: 1,
     Unit: 'Count',
   },
 };
