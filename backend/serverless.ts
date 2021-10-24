@@ -2,7 +2,7 @@ import * as AwsConfig from 'serverless/aws';
 
 import ApiGatewayErrors from './resources/apiGatewayErrors';
 import DojoServerlessTable from './resources/dynamodb';
-// import ApplicationEventBus from './resources/eventBridge';
+import ApplicationEventBus from './resources/eventBridge';
 
 const serverlessConfiguration: AwsConfig.Serverless = {
   service: 'dojo-serverless-backend',
@@ -30,7 +30,11 @@ const serverlessConfiguration: AwsConfig.Serverless = {
         ],
         Resource: { 'Fn::GetAtt': ['DojoServerlessTable', 'Arn'] },
       },
-      // { Effect: 'Allow', Action: ['events:PutEvents'], Resource: '*' },
+      {
+        Effect: 'Allow',
+        Action: ['events:PutEvents'],
+        Resource: '*',
+      },
     ],
     usagePlan: {
       quota: {
@@ -97,7 +101,11 @@ const serverlessConfiguration: AwsConfig.Serverless = {
     //  --- WEBSOCKET ---
     connectWebsocket: {
       handler: 'src/handlers/real-time/connect.main',
-      events: [{ websocket: { route: '$connect' } }],
+      events: [
+        {
+          websocket: { route: '$connect' },
+        },
+      ],
     },
     disconnectWebsocket: {
       handler: 'src/handlers/real-time/disconnect.main',
@@ -131,37 +139,84 @@ const serverlessConfiguration: AwsConfig.Serverless = {
               'arn:aws:events:#{AWS::Region}:#{AWS::AccountId}:event-bus/dojo-serverless',
             pattern: {
               source: ['dojo-serverless'],
-              'detail-type': ['LAZYNESS_DETECTED'],
+              'detail-type': ['LAZYNESS_DETECTED'], // Je comprend pas quand cet evenement va etre detecte (par qui il est envoyé)
             },
           },
         },
       ],
     },
+
+    spreadVirus: {
+      handler: 'src/handlers/stateMachine/spreadVirus.main',
+      events: [
+        {
+          schedule: {
+            rate: 'rate(1 minute)',
+          },
+        },
+      ],
+    },
+
+    chooseWaitTime: {
+      handler: 'src/handlers/stateMachine/chooseWaitTime.main',
+    },
+    initiateMultipleViruses: {
+      handler: 'src/handlers/stateMachine/initiateMultipleViruses.main',
+    },
   },
   stepFunctions: {
     stateMachines: {
-      wait10SecondsAndDoNothing: {
+      generateMultipleViruses: {
         events: [
           {
-            cloudwatchEvent: {
+            eventBridge: {
               eventBusName:
                 'arn:aws:events:#{AWS::Region}:#{AWS::AccountId}:event-bus/dojo-serverless',
               event: {
                 source: ['dojo-serverless'],
-                'detail-type': ['NOTHING_REQUESTED'],
+                'detail-type': ['VIRUS_CREATION_REQUESTED'],
               },
             },
           },
         ],
         definition: {
-          StartAt: 'Wait10Sec',
+          StartAt: 'InitiateMultipleViruses',
           States: {
-            Wait10Sec: {
-              Type: 'Wait',
-              Seconds: 10,
-              Next: 'DoNothing',
+            InitiateMultipleViruses: {
+              Type: 'Task',
+              Resource: {
+                'Fn::GetAtt': ['initiateMultipleViruses', 'Arn'],
+              },
+              Next: 'MapVirusCreation',
             },
-            DoNothing: { Type: 'Succeed' },
+            MapVirusCreation: {
+              Type: 'Map',
+              Iterator: {
+                StartAt: 'ChooseWaitTime',
+                States: {
+                  ChooseWaitTime: {
+                    Type: 'Task',
+                    Resource: {
+                      'Fn::GetAtt': ['chooseWaitTime', 'Arn'],
+                    },
+                    Next: 'WaitXSeconds',
+                  },
+                  WaitXSeconds: {
+                    Type: 'Wait',
+                    SecondsPath: '$.timeInSeconds',
+                    Next: 'CreateVirus',
+                  },
+                  CreateVirus: {
+                    Type: 'Task',
+                    Resource: {
+                      'Fn::GetAtt': ['createVirus', 'Arn'],
+                    },
+                    End: true,
+                  },
+                },
+              },
+              End: true,
+            },
           },
         },
       },
@@ -171,7 +226,7 @@ const serverlessConfiguration: AwsConfig.Serverless = {
     Resources: {
       ...ApiGatewayErrors,
       DojoServerlessTable,
-      // ApplicationEventBus,
+      ApplicationEventBus,
     },
   },
 };

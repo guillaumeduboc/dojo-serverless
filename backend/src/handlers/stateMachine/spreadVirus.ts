@@ -8,7 +8,7 @@ export const main = async (): Promise<void> => {
       Entries: [
         {
           Source: 'dojo-serverless',
-          DetailType: 'NOTHING_REQUESTED',
+          DetailType: 'VIRUS_CREATION_REQUESTED',
           Detail: JSON.stringify({}),
           EventBusName: 'dojo-serverless',
         },
