@@ -26,6 +26,19 @@ const serverlessConfiguration: AwsConfig.Serverless = {
         ],
         Resource: { 'Fn::GetAtt': ['DojoServerlessTable', 'Arn'] },
       },
+      {
+        Effect: 'Allow',
+        Action: [
+          'logs:Describe*',
+          'logs:Get*',
+          'logs:List*',
+          'logs:StartQuery',
+          'logs:StopQuery',
+          'logs:TestMetricFilter',
+          'logs:FilterLogEvents',
+        ],
+        Resource: '*',
+      },
     ],
     usagePlan: {
       quota: {
@@ -40,26 +53,6 @@ const serverlessConfiguration: AwsConfig.Serverless = {
     },
   },
   functions: {
-    reportAlarm: {
-      handler: 'reporting/reportAlarm.main',
-      events: [
-        {
-          eventBridge: {
-            pattern: {
-              source: ['aws.cloudwatch'],
-              'detail-type': ['CloudWatch Alarm State Change'],
-              detail: {
-                alarmName: [`${Alarm.Properties.AlarmName}`],
-                state: {
-                  //@ts-ignore
-                  value: ['ALARM'],
-                },
-              },
-            },
-          },
-        },
-      ],
-    },
     hello: {
       handler: 'hello.main',
       events: [
@@ -80,11 +73,6 @@ const serverlessConfiguration: AwsConfig.Serverless = {
             method: 'post',
             path: 'virus',
             cors: true,
-          },
-        },
-        {
-          schedule: {
-            rate: 'rate(10 minutes)',
           },
         },
       ],
@@ -151,6 +139,37 @@ const serverlessConfiguration: AwsConfig.Serverless = {
           },
         },
       ],
+    },
+    reportAlarm: {
+      handler: 'reporting/reportAlarm.main',
+      events: [
+        {
+          eventBridge: {
+            pattern: {
+              source: ['aws.cloudwatch'],
+              'detail-type': ['CloudWatch Alarm State Change'],
+              detail: {
+                alarmName: [`${Alarm.Properties.AlarmName}`],
+                state: {
+                  //@ts-ignore
+                  value: ['ALARM'],
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+
+    raiseError: {
+      handler: 'reporting/raiseError.main',
+      // events: [
+      //   {
+      //     schedule: {
+      //       rate: 'rate(1 minutes)',
+      //     },
+      //   },
+      // ],
     },
   },
   resources: {

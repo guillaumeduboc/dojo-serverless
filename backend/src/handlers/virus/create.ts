@@ -14,6 +14,7 @@ export const main: APIGatewayProxyHandler = async () => {
       Item: { partitionKey: 'Virus', sortKey: virusId },
     })
     .promise();
+  throw new Error('This is a mocked error');
 
   return success({ virusId });
 };
