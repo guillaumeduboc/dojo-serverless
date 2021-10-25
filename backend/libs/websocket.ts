@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { APIGatewayEventRequestContext } from 'aws-lambda';
 import { ApiGatewayManagementApi } from 'aws-sdk';
@@ -32,8 +33,19 @@ export const sendMessageToConnection = async ({
   message: any;
 }): Promise<void> => {
   // TODO init apiGateWay client with the correct endpoint
+  const apiGatewayManagementApi = new ApiGatewayManagementApi({
+    endpoint,
+  });
   try {
     // TODO send a message to a connection
+    console.log('Trying to send message to connection');
+    await apiGatewayManagementApi
+      .postToConnection({
+        ConnectionId: connectionId,
+        Data: JSON.stringify(message),
+      })
+      .promise();
+    console.log('message sent to connection');
   } catch (error) {
     if (error.statusCode !== 410) {
       throw error;

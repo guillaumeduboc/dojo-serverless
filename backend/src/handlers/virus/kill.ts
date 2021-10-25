@@ -5,7 +5,7 @@ import { failure, success } from '@libs/response';
 
 const documentClient = new DynamoDB.DocumentClient();
 
-export const main: APIGatewayProxyHandler = async event => {
+export const main: APIGatewayProxyHandler = async (event) => {
   if (!event.pathParameters || !event.pathParameters.id) {
     return failure({ message: 'No id provided' });
   }

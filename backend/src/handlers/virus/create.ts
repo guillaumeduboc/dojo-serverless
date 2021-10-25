@@ -8,7 +8,6 @@ const documentClient = new DynamoDB.DocumentClient();
 
 export const main: APIGatewayProxyHandler = async () => {
   const virusId = uuid();
-
   await documentClient
     .put({
       TableName: 'dojo-serverless-table',
@@ -16,5 +15,5 @@ export const main: APIGatewayProxyHandler = async () => {
     })
     .promise();
 
-  return success({ id: virusId });
+  return success({ virusId });
 };
